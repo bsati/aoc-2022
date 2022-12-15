@@ -2,3 +2,4 @@
 *.pdb
 .vscode/settings.json
 *.obj
+target/
