@@ -1,6 +1,18 @@
 use std::cmp::Ordering;
-use std::string::String;
-use std::vec::Vec;
+
+use crate::problem::Problem;
+
+pub struct Day13 {
+    packets: Vec<(Packet, Packet, usize)>,
+}
+
+impl Day13 {
+    pub fn new() -> Self {
+        Day13 {
+            packets: Vec::new(),
+        }
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Packet {
@@ -108,53 +120,58 @@ fn parse_data(s: &str) -> Vec<Packet> {
     collected
 }
 
-fn main() {
-    let input = include_str!("./input.txt");
+impl Problem for Day13 {
+    fn parse_input(&mut self, input: &str) {
+        self.packets = input
+            .split("\r\n\r\n")
+            .enumerate()
+            .map(|(i, pair)| {
+                let mut split = pair.split("\r\n");
+                let first_packet = split.next().unwrap();
+                let second_packet = split.next().unwrap();
 
-    let packets = input
-        .split("\r\n\r\n")
-        .enumerate()
-        .map(|(i, pair)| {
-            let mut split = pair.split("\r\n");
-            let first_packet = split.next().unwrap();
-            let second_packet = split.next().unwrap();
+                let packet1 = parse_packet(first_packet);
+                let packet2 = parse_packet(second_packet);
 
-            let packet1 = parse_packet(first_packet);
-            let packet2 = parse_packet(second_packet);
+                (packet1, packet2, i + 1)
+            })
+            .collect::<Vec<(Packet, Packet, usize)>>();
+    }
 
-            (packet1, packet2, i + 1)
-        })
-        .collect::<Vec<(Packet, Packet, usize)>>();
+    fn part1(&self) {
+        let sum: usize = self
+            .packets
+            .iter()
+            .filter(|(packet1, packet2, _index)| packet1 < packet2)
+            .map(|(_packet1, _packet2, index)| index)
+            .sum();
+        println!("part 1) {sum}");
+    }
 
-    let sum: usize = packets
-        .iter()
-        .filter(|(packet1, packet2, _index)| packet1 < packet2)
-        .map(|(_packet1, _packet2, index)| index)
-        .sum();
+    fn part2(&self) {
+        let divider1 = Packet::List(vec![Packet::List(vec![Packet::Value(2)])]);
+        let divider2 = Packet::List(vec![Packet::List(vec![Packet::Value(6)])]);
 
-    println!("part 1) {}", sum);
+        let mut simplified = self
+            .packets
+            .clone()
+            .into_iter()
+            .flat_map(|(packet1, packet2, _index)| [packet1, packet2])
+            .chain([divider1.clone(), divider2.clone()])
+            .collect::<Vec<Packet>>();
 
-    let divider1 = Packet::List(vec![Packet::List(vec![Packet::Value(2)])]);
-    let divider2 = Packet::List(vec![Packet::List(vec![Packet::Value(6)])]);
+        simplified.sort();
 
-    let mut simplified = packets
-        .into_iter()
-        .flat_map(|(packet1, packet2, _index)| [packet1, packet2])
-        .chain([divider1.clone(), divider2.clone()])
-        .collect::<Vec<Packet>>();
-
-    simplified.sort();
-
-    let product: usize = simplified
-        .iter()
-        .enumerate()
-        .map(|(i, packet)| {
-            if packet == &divider1 || packet == &divider2 {
-                return i + 1;
-            }
-            1
-        })
-        .product();
-
-    println!("part 2) {}", product);
+        let product: usize = simplified
+            .iter()
+            .enumerate()
+            .map(|(i, packet)| {
+                if packet == &divider1 || packet == &divider2 {
+                    return i + 1;
+                }
+                1
+            })
+            .product();
+        println!("part 2) {product}");
+    }
 }

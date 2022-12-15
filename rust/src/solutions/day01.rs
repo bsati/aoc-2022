@@ -29,13 +29,13 @@ impl Problem for Day1 {
     }
 
     fn part1(&self) {
-        println!("Max calories: {}", self.calories[self.calories.len() - 1]);
+        println!("part 1) {}", self.calories[self.calories.len() - 1]);
     }
 
     fn part2(&self) {
         let len = self.calories.len();
         println!(
-            "Max calories sum: {}",
+            "part 2) {}",
             self.calories[len - 1] + self.calories[len - 2] + self.calories[len - 3]
         );
     }

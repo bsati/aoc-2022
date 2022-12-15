@@ -12,10 +12,12 @@ impl Day2 {
 
 impl Problem for Day2 {
     fn parse_input<'a>(&mut self, input: &'a str) {
-        self.lines = input
-            .split("\r\n")
-            .map(str::to_string)
-            .collect::<Vec<String>>();
+        self.lines.append(
+            &mut input
+                .split("\r\n")
+                .map(str::to_string)
+                .collect::<Vec<String>>(),
+        );
     }
 
     fn part1(&self) {
@@ -38,7 +40,7 @@ impl Problem for Day2 {
             .map(|a| score_fn(a.split(" ").collect::<Vec<&str>>()))
             .sum();
 
-        println!("sum: {}", score);
+        println!("part 1) {score}");
     }
 
     fn part2(&self) {
@@ -61,6 +63,6 @@ impl Problem for Day2 {
             .map(|a| score_fn(a.split(" ").collect::<Vec<&str>>()))
             .sum();
 
-        println!("sum: {}", score);
+        println!("part 2) {score}");
     }
 }

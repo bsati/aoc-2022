@@ -1,5 +1,5 @@
 use problem::Problem;
-use solutions::{Day1, Day2};
+use solutions::{Day1, Day10, Day11, Day13, Day2, Day3, Day4, Day6};
 use std::{env, fs};
 
 mod problem;
@@ -9,6 +9,12 @@ fn get_solver(day: i32) -> Option<Box<dyn Problem>> {
     match day {
         1 => Some(Box::new(Day1::new())),
         2 => Some(Box::new(Day2::new())),
+        3 => Some(Box::new(Day3::new())),
+        4 => Some(Box::new(Day4::new())),
+        6 => Some(Box::new(Day6::new())),
+        10 => Some(Box::new(Day10::new())),
+        11 => Some(Box::new(Day11::new())),
+        13 => Some(Box::new(Day13::new())),
         _ => None,
     }
 }
