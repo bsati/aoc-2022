@@ -5,11 +5,6 @@ import (
 	"strings"
 )
 
-type Tuple[T any] struct {
-	a T
-	b T
-}
-
 type Day2 struct {
 	choices []Tuple[byte]
 }

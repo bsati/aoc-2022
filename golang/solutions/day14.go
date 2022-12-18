@@ -8,7 +8,7 @@ import (
 )
 
 type Day14 struct {
-	positions   map[Coordinate]bool
+	positions   map[Tuple[int]]bool
 	min_x       int
 	width       int
 	height      int
@@ -26,7 +26,7 @@ func (d *Day14) Parse(input string) {
 	max_y := 0
 	paths := []Path{}
 	for _, line := range lines {
-		path := Path{coordinates: []Coordinate{}}
+		path := Path{coordinates: []Tuple[int]{}}
 		split := strings.Split(line, " -> ")
 		for _, coordinate := range split {
 			xySplit := strings.Split(coordinate, ",")
@@ -41,9 +41,9 @@ func (d *Day14) Parse(input string) {
 			if y > max_y {
 				max_y = y
 			}
-			path.coordinates = append(path.coordinates, Coordinate{
-				x: x,
-				y: y,
+			path.coordinates = append(path.coordinates, Tuple[int]{
+				a: x,
+				b: y,
 			})
 		}
 		paths = append(paths, path)
@@ -52,11 +52,11 @@ func (d *Day14) Parse(input string) {
 	height := max_y + 1
 	width := max_x - min_x + 1
 
-	positions := map[Coordinate]bool{}
+	positions := map[Tuple[int]]bool{}
 
 	for i := 0; i < len(paths); i++ {
 		for j := 0; j < len(paths[i].coordinates); j++ {
-			paths[i].coordinates[j].x -= min_x
+			paths[i].coordinates[j].a -= min_x
 		}
 	}
 
@@ -89,7 +89,7 @@ func (d *Day14) Part2() {
 func (d *Day14) runner(part1 bool) int {
 	placed := 0
 
-	sand := Coordinate{x: 500 - d.min_x, y: 0}
+	sand := Tuple[int]{a: 500 - d.min_x, b: 0}
 
 	h := d.height
 	if !part1 {
@@ -98,12 +98,12 @@ func (d *Day14) runner(part1 bool) int {
 
 	for {
 		newPos, invalid, rest := tryPositions(d.positions, d.width, h, &sand, part1)
-		if invalid || !part1 && newPos.x == 500-d.min_x && newPos.y == 0 {
+		if invalid || !part1 && newPos.a == 500-d.min_x && newPos.b == 0 {
 			break
 		}
 		if rest {
 			d.positions[newPos] = true
-			sand = Coordinate{x: 500 - d.min_x, y: 0}
+			sand = Tuple[int]{a: 500 - d.min_x, b: 0}
 			placed++
 		} else {
 			sand = newPos
@@ -115,44 +115,44 @@ func (d *Day14) runner(part1 bool) int {
 
 // tryPositions tries all possible positions for the current sand location
 // and returns the new position, whether the sand falls out (first bool), is at rest (second bool)
-func tryPositions(positions map[Coordinate]bool, width, height int, sand *Coordinate, part1 bool) (Coordinate, bool, bool) {
-	var result Coordinate
-	if !part1 && sand.y+1 == height {
+func tryPositions(positions map[Tuple[int]]bool, width, height int, sand *Tuple[int], part1 bool) (Tuple[int], bool, bool) {
+	var result Tuple[int]
+	if !part1 && sand.b+1 == height {
 		return *sand, false, true
 	}
-	if sand.y+1 >= height && part1 {
+	if sand.b+1 >= height && part1 {
 		return result, true, false
 	}
-	if _, ok := positions[Coordinate{x: sand.x, y: sand.y + 1}]; !ok {
-		result.x = sand.x
-		result.y = sand.y + 1
+	if _, ok := positions[Tuple[int]{a: sand.a, b: sand.b + 1}]; !ok {
+		result.a = sand.a
+		result.b = sand.b + 1
 		return result, false, false
 	}
-	if sand.x-1 < 0 && part1 {
+	if sand.a-1 < 0 && part1 {
 		return result, true, false
 	}
-	if _, ok := positions[Coordinate{x: sand.x - 1, y: sand.y + 1}]; !ok {
-		result.x = sand.x - 1
-		result.y = sand.y + 1
+	if _, ok := positions[Tuple[int]{a: sand.a - 1, b: sand.b + 1}]; !ok {
+		result.a = sand.a - 1
+		result.b = sand.b + 1
 		return result, false, false
 	}
-	if sand.x+1 >= width && part1 {
+	if sand.a+1 >= width && part1 {
 		return result, true, false
 	}
-	if _, ok := positions[Coordinate{x: sand.x + 1, y: sand.y + 1}]; !ok {
-		result.x = sand.x + 1
-		result.y = sand.y + 1
+	if _, ok := positions[Tuple[int]{a: sand.a + 1, b: sand.b + 1}]; !ok {
+		result.a = sand.a + 1
+		result.b = sand.b + 1
 		return result, false, false
 	}
 	return *sand, false, true
 }
 
 type Path struct {
-	coordinates []Coordinate
+	coordinates []Tuple[int]
 }
 
-func (p *Path) getCoordinatePairs() []Coordinate {
-	result := []Coordinate{}
+func (p *Path) getCoordinatePairs() []Tuple[int] {
+	result := []Tuple[int]{}
 	result = append(result, p.coordinates...)
 	if len(result) <= 1 {
 		return result
@@ -160,22 +160,22 @@ func (p *Path) getCoordinatePairs() []Coordinate {
 	for i := len(p.coordinates) - 1; i >= 1; i-- {
 		target := p.coordinates[i-1]
 		current := p.coordinates[i]
-		if target.x != current.x {
+		if target.a != current.a {
 			dir := -1
-			if current.x < target.x {
+			if current.a < target.a {
 				dir = 1
 			}
-			current.x += dir
-			for ; current.x != target.x; current.x += dir {
+			current.a += dir
+			for ; current.a != target.a; current.a += dir {
 				result = append(result, current)
 			}
 		} else {
 			dir := -1
-			if current.y < target.y {
+			if current.b < target.b {
 				dir = 1
 			}
-			current.y += dir
-			for ; current.y != target.y; current.y += dir {
+			current.b += dir
+			for ; current.b != target.b; current.b += dir {
 				result = append(result, current)
 			}
 		}
@@ -183,27 +183,22 @@ func (p *Path) getCoordinatePairs() []Coordinate {
 	return result
 }
 
-type Coordinate struct {
-	x int
-	y int
-}
-
 func (d *Day14) printBoard() {
 	min_x := math.MaxInt
 	max_x := math.MinInt
 
 	for k := range d.positions {
-		if k.x < min_x {
-			min_x = k.x
+		if k.a < min_x {
+			min_x = k.a
 		}
-		if k.x > max_x {
-			max_x = k.x
+		if k.a > max_x {
+			max_x = k.a
 		}
 	}
 
 	for j := 0; j < d.height; j++ {
 		for i := min_x; i <= max_x; i++ {
-			if s, ok := d.positions[Coordinate{x: i, y: j}]; ok {
+			if s, ok := d.positions[Tuple[int]{a: i, b: j}]; ok {
 				if s {
 					fmt.Print("o")
 				} else {

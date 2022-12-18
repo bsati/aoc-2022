@@ -16,6 +16,24 @@ func GetSolver(day int) Problem {
 		return newDay9()
 	case 14:
 		return newDay14()
+	case 15:
+		return newDay15()
 	}
 	return nil
+}
+
+func abs(a int) int {
+	if a < 0 {
+		return -1 * a
+	}
+	return a
+}
+
+type Number interface {
+	int | byte
+}
+
+type Tuple[T Number] struct {
+	a T
+	b T
 }
